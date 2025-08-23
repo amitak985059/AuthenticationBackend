@@ -1,4 +1,5 @@
 const userModel = require('../model/user.model');
+const bcrypt = require('bcrypt');
 
 const register = async (req, res) => {
     try {
@@ -86,9 +87,13 @@ const getUserById = async (req, res) => {
 
 const updateUserProfile = async (req, res) => {
     const { id } = req.params;
-    const updates = req.body;
+    const updates = { ...req.body };
 
     try {
+        // if password is being updated, hash it
+        if (updates.password) {
+            updates.password = await bcrypt.hash(updates.password, 10);
+        }
         const user = await userModel.findByIdAndUpdate(id, updates, { new: true });
         if (!user) {
             return res.status(404).json({ message: "User not found" });
@@ -101,7 +106,7 @@ const updateUserProfile = async (req, res) => {
         console.error("Update User Profile Error:", error);
         res.status(500).json({ error: 'Internal server error' });
     }
-};  
+};
 
 module.exports = {
     register,
