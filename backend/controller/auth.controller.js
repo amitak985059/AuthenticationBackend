@@ -108,10 +108,21 @@ const updateUserProfile = async (req, res) => {
     }
 };
 
+const getLoggedInUser = async (req, res) => {
+    try {
+        const user = req.user;
+        res.status(200).json({ user });
+    } catch (error) {
+        console.error("Get Logged In User Error:", error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
 module.exports = {
     register,
     login,
     logout,
     getUserById,
+    getLoggedInUser,
     updateUserProfile
 };
